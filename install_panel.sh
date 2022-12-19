@@ -1014,3 +1014,6 @@ echo -e "=================================================================="
 endTime=$(date +%s)
 ((outTime = ($endTime - $startTime) / 60))
 echo -e "Time consumed:\033[32m $outTime \033[0mMinute!"
+sed -i "s|bind_user == 'True'|bind_user == 'XXXX'|" /www/server/panel/BTPanel/static/js/index.js
+rm -f /www/server/panel/data/bind.pl
+echo -e "绑定手机去除完成！！"
