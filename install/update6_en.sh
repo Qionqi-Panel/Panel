@@ -3,6 +3,8 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 LANG=en_US.UTF-8
 
+download_Url='https://raw.githubusercontent.com/Qionqi-Panel/Panel/main'
+
 if [ ! -d /www/server/panel/BTPanel ]; then
 	echo "============================================="
 	echo "Error, 5.x Can't use this command to upgrade!"
@@ -13,7 +15,7 @@ public_file=/www/server/panel/install/public.sh
 publicFileMd5=$(md5sum ${public_file} 2>/dev/null | awk '{print $1}')
 md5check="BCFA270CE6CAC9530B2DBA8D7E624C01"
 if [ "${publicFileMd5}" != "${md5check}" ]; then
-	wget -O Tpublic.sh http://47.245.56.49/install/public.sh -T 20
+	wget -O Tpublic.sh ${download_Url}/install/public.sh -T 20
 	publicFileMd5=$(md5sum Tpublic.sh 2>/dev/null | awk '{print $1}')
 	if [ "${publicFileMd5}" == "${md5check}" ]; then
 		\cp -rpa Tpublic.sh $public_file
@@ -35,14 +37,14 @@ if [ -f $env_path ]; then
 	mypip="/www/server/panel/pyenv/bin/pip"
 fi
 
-download_Url=$NODE_URL
+# download_Url=$NODE_URL
 setup_path=/www
 # version=$(curl -Ss --connect-timeout 5 -m 2 https://brandnew.aapanel.com/api/panel/getLatestOfficialVersion)
 version='6.8.26'
 if [ "$version" = '' ]; then
 	version='6.8.26'
 fi
-wget -T 5 -O /tmp/panel.zip http://47.245.56.49/install/update/LinuxPanel_EN-${version}.zip
+wget -T 5 -O /tmp/panel.zip ${download_Url}/install/update/LinuxPanel_EN-${version}.zip
 dsize=$(du -b /tmp/panel.zip | awk '{print $1}')
 if [ $dsize -lt 10240 ]; then
 	echo "Failed to get update package, please update or contact aaPanel Operation"
@@ -54,7 +56,7 @@ cd $setup_path/server/panel/
 check_bt=$(cat /etc/init.d/bt)
 if [ "${check_bt}" = "" ]; then
 	rm -f /etc/init.d/bt
-	wget -O /etc/init.d/bt http://47.245.56.49/install/src/bt6_en.init -T 20
+	wget -O /etc/init.d/bt ${download_Url}/install/src/bt6_en.init -T 20
 	chmod +x /etc/init.d/bt
 fi
 rm -f /www/server/panel/*.pyc

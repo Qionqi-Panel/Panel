@@ -9,6 +9,7 @@ export PATH
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US:en
 
+download_Url='https://raw.githubusercontent.com/Qionqi-Panel/Panel/main'
 get_node_url() {
 	nodes=(https://dg2.bt.cn https://dg1.bt.cn https://download.bt.cn https://hk1-node.bt.cn https://na1-node.bt.cn https://jp1-node.bt.cn)
 
@@ -139,9 +140,9 @@ if [ -d "/www/server/phpmyadmin/pma" ]; then
 	rm -rf /www/server/phpmyadmin/pma
 	EN_CHECK=$(cat /www/server/panel/config/config.json | grep English)
 	if [ "${EN_CHECK}" ]; then
-		curl http://47.245.56.49/install/update6_en.sh | bash
+		curl ${download_Url}/install/update6_en.sh | bash
 	else
-		curl http://47.245.56.49/install/update6.sh | bash
+		curl ${download_Url}/install/update6.sh | bash
 	fi
 	echo >/www/server/panel/data/restart.pl
 fi

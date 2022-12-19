@@ -227,7 +227,7 @@ get_node_url() {
   fi
   rm -f $tmp_file1
   rm -f $tmp_file2
-  download_Url='http://47.245.56.49'
+  download_Url='https://raw.githubusercontent.com/Qionqi-Panel/Panel/main'
   echo "Download node: $download_Url"
   echo '---------------------------------------------'
 }
