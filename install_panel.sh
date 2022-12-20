@@ -55,27 +55,14 @@ GetSysInfo() {
   echo -e ${SYS_VERSION}
   echo -e Bit:${SYS_BIT} Mem:${MEM_TOTAL}M Core:${CPU_INFO}
   echo -e ${SYS_INFO}
-  echo -e "============================================"
   echo -e "请截图以上报错信息发帖至论坛www.bt.cn/bbs求助"
-  echo -e "============================================"
-  if [ -f "/usr/bin/qrencode" ]; then
-    echo -e "或微信扫码联系企业微信技术求助"
-    echo -e "============================================"
-    qrencode -t ANSIUTF8 "https://work.weixin.qq.com/kfid/kfc9072f0e29a53bd52"
-    echo -e "============================================"
-  else
-    echo -e "或手机访问以下链接、扫码联系企业微信技术求助"
-    echo -e "============================================"
-    echo -e "联系链接:https://work.weixin.qq.com/kfid/kfc9072f0e29a53bd52"
-    echo -e "============================================"
-  fi
 }
 
 Red_Error() {
-  echo '================================================='
-  printf '\033[1;31;40m%b\033[0m\n' "$@"
+	echo '=================================================';
+	printf '\033[1;31;40m%b\033[0m\n' "$@";
   GetSysInfo
-  exit 1
+	exit 1;
 }
 
 # 锁删除

@@ -9,7 +9,7 @@ if [ ! -d /www/server/panel/BTPanel ]; then
 	echo "============================================="
 	echo "Error, 5.x Can't use this command to upgrade!"
 	#echo "5.9 Smooth upgrade to 6.0 command：curl http://download.bt.cn/install/update_to_6.sh|bash"
-	exit 0
+	exit 0;
 fi
 public_file=/www/server/panel/install/public.sh
 publicFileMd5=$(md5sum ${public_file} 2>/dev/null | awk '{print $1}')
@@ -88,20 +88,14 @@ if [ "$psutil" = "" ]; then
 fi
 $mypip install telegram
 $mypip install paramiko -I
-grep "www:x" /etc/passwd >/dev/null
-if [ "$?" != 0 ]; then
 	Run_User="www"
 	groupadd ${Run_User}
 	useradd -s /sbin/nologin -g ${Run_User} ${Run_User}
-fi
 chattr -i /etc/init.d/bt
 chmod +x /etc/init.d/bt
 echo "====================================="
 rm -f /dev/shm/bt_sql_tips.pl
-process=$(ps aux | grep -E "task.pyc|main.py" | grep -v grep | awk '{print $2}')
-if [ "$process" != "" ]; then
-	kill $process
-fi
+kill $(ps aux|grep -E "task.pyc|main.py"|grep -v grep|awk '{print $2}')
 #/etc/init.d/bt restart
-echo 'True' >/www/server/panel/data/restart.pl
-echo "Successfully upgraded to[$version]${Ver}"
+#echo 'True' > /www/server/panel/data/restart.pl
+echo "Successfully upgraded to[$version]${Ver}";

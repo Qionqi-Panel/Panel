@@ -10,12 +10,6 @@ if [ ! -d /www/server/panel/BTPanel ]; then
 	exit 0
 fi
 
-if [ ! -f "/www/server/panel/pyenv/bin/python3" ]; then
-	echo "============================================="
-	echo "错误, 当前面板过旧/py-2.7/无pyenv环境，无法升级至最新版面板"
-	echo "请截图发帖至论坛www.bt.cn/bbs求助"
-	exit 0
-fi
 
 public_file=/www/server/panel/install/public.sh
 publicFileMd5=$(md5sum ${public_file} 2>/dev/null | awk '{print $1}')
