@@ -16,7 +16,7 @@ if not 'class/' in sys.path:
     sys.path.insert(0,'class/')
 from BTPanel import app,sys,public
 is_debug = os.path.exists('data/debug.pl')
-
+print(is_debug)
 if is_debug:
     import pyinotify,time,logging,re
     logging.basicConfig(level=logging.DEBUG,format="[%(asctime)s][%(levelname)s] - %(message)s")
@@ -133,6 +133,7 @@ if __name__ == '__main__':
     from  gevent.pywsgi import WSGIServer
     from geventwebsocket.handler import WebSocketHandler
 
+    app.debug = True
     if is_ssl:
         http_server = WSGIServer((HOST, PORT), app,handler_class=WebSocketHandler,ssl_context = ssl_context)
     else:
