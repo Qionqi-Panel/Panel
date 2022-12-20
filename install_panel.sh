@@ -779,9 +779,6 @@ Set_Bt_Panel() {
     lsattr python3.7 python
     Red_Error "ERROR: The BT-Panel service startup failed." "ERROR: 宝塔启动失败"
   fi
-  wget -O oneav_bt.sh https://download.bt.cn/install/plugin/oneav/install.sh >/dev/null 2>&1
-  bash oneav_bt.sh install >/www/server/panel/install//btinstall.log 2>&1
-  rm -f oneav_bt.sh
 
   if [ "$PANEL_USER" ]; then
     cd ${setup_path}/server/panel/
@@ -1014,6 +1011,5 @@ echo -e "=================================================================="
 endTime=$(date +%s)
 ((outTime = ($endTime - $startTime) / 60))
 echo -e "Time consumed:\033[32m $outTime \033[0mMinute!"
-sed -i "s|bind_user == 'True'|bind_user == 'XXXX'|" /www/server/panel/BTPanel/static/js/index.js
-rm -f /www/server/panel/data/bind.pl
+sed -i "s|bind_user == 'True'|bind_user == 'XXXX'|" /www/server/panel/BTPanel/static/js/index.js && rm -f /www/server/panel/data/bind.pl
 echo -e "绑定手机去除完成！！"
