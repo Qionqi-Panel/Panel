@@ -1,0 +1,2 @@
+/Users/bruce/MyData/panel/LinuxPanel-7.7.0/install/pyenv/pyenv-ubuntu20-xaarch64.tar.gz filter=lfs diff=lfs merge=lfs -text
+pyenv-ubuntu20-xaarch64.tar.gz filter=lfs diff=lfs merge=lfs -text
