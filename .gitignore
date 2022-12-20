@@ -1,1 +1,8 @@
 panel/.idea/
+.idea/.gitignore
+.idea/LinuxPanel-7.7.0.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
+.idea/inspectionProfiles/profiles_settings.xml

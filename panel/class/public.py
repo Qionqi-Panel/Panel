@@ -2840,32 +2840,16 @@ def query_dns(domain,dns_type = 'A',is_root = False):
         return False
 
 #取通用对象
-re_key_match = re.compile(r'^[\w\s\[\]\-]+$')
-re_key_match2 = re.compile(r'^\.?__[\w\s[\]\-]+__\.?$')
-key_filter_list = ['get','set','get_items','exists','__contains__','__setitem__','__getitem__','__delitem__','__delattr__','__setattr__','__getattr__','__class__']
 class dict_obj:
     def __contains__(self, key):
         return getattr(self,key,None)
-    def __setitem__(self, key, value):
-        if key in key_filter_list:
-            raise PanelError("错误的字段名")
-        if not re_key_match.match(key) or re_key_match2.match(key):
-            raise PanelError("错误的字段名")
-        setattr(self,key,value)
+    def __setitem__(self, key, value): setattr(self,key,value)
     def __getitem__(self, key): return getattr(self,key,None)
     def __delitem__(self,key): delattr(self,key)
     def __delattr__(self, key): delattr(self,key)
     def get_items(self): return self
     def exists(self,keys):
         return exists_args(keys,self)
-    def set(self,key,value):
-        if not isinstance(value,str) or not isinstance(key,str): return False
-        if key in key_filter_list:
-            raise PanelError("错误的字段名")
-        if not re_key_match.match(key) or re_key_match2.match(key):
-            raise PanelError("错误的字段名")
-        return setattr(self,key,value)
-
     def get(self,key,default='',format='',limit = []):
         '''
             @name 获取指定参数
@@ -2877,8 +2861,7 @@ class dict_obj:
         '''
         if key.find('/') != -1:
             key,format = key.split('/')
-        result = getattr(self,key,default)
-        if isinstance(result,str): result = result.strip()
+        result = getattr(self,key,default).strip()
         if format:
             if format in ['str','string','s']:
                 result = str(result)
@@ -2914,10 +2897,10 @@ class dict_obj:
                 if not re.match(regex,result):
                     raise ValueError('参数：{}，要求正确的URL格式'.format(key))
             elif format in ['ip','ipaddr','i','ipv4','ipv6']:
-                if format == 'ipv4':
+                if format is 'ipv4':
                     if not is_ipv4(result):
                         raise ValueError('参数：{}，要求正确的ipv4地址'.format(key))
-                elif format == 'ipv6':
+                elif format is 'ipv6':
                     if not is_ipv6(result):
                         raise ValueError('参数：{}，要求正确的ipv6地址'.format(key))
                 else:
@@ -2942,10 +2925,10 @@ class dict_obj:
                 length = int(format[1:].strip())
                 result_len = len(result)
                 error_obj = ValueError("参数：{}，要求长度为{}".format(key,format))
-                if operator == '=':
+                if operator is '=':
                     if result_len != length:
                         raise error_obj
-                elif operator == '>':
+                elif operator is '>':
                     if result_len < length:
                         raise error_obj
                 else:
@@ -2954,7 +2937,7 @@ class dict_obj:
             elif format[0] in ['^','(','[','\\','.'] or format[-1] in ['$',')',']','+','}']:
                 if not re.match(format,result):
                     raise ValueError("指定参数格式不正确, {}:{}".format(key,format))
-
+            
         if limit:
             if not result in limit:
                 raise ValueError("指定参数值范围不正确, {}:{}".format(key,limit))
