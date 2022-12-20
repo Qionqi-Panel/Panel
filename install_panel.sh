@@ -7,7 +7,7 @@ LANG=en_US.UTF-8
 
 #「验证是否ROOT权限安装面板」
 if [ $(whoami) != "root" ]; then
-  echo "请使用Root权限执行穷奇安装命令！"
+  echo "请使用Root权限执行宝塔安装命令！"
   exit 1
 fi
 
@@ -20,7 +20,7 @@ fi
 #「验证是否为Centos6系统」
 Centos6Check=$(cat /etc/redhat-release | grep ' 6.' | grep -iE 'centos|Red Hat')
 if [ "${Centos6Check}" ]; then
-  echo "Centos6不支持安装宝塔面板，请更换Centos7/8安装穷奇面板"
+  echo "Centos6不支持安装宝塔面板，请更换Centos7/8安装宝塔面板"
   exit 1
 fi
 
@@ -932,7 +932,7 @@ echo "
 +----------------------------------------------------------------------
 | The WebPanel URL will be http://SERVER_IP:8888 when installed.
 +----------------------------------------------------------------------
-| 为了您的正常使用，请确保使用全新或纯净的系统安装穷奇面板，不支持已部署项目/环境的系统安装
+| 为了您的正常使用，请确保使用全新或纯净的系统安装宝塔面板，不支持已部署项目/环境的系统安装
 +----------------------------------------------------------------------
 "
 
@@ -968,7 +968,7 @@ done
 
 #「判断是否允许接下来的操作」
 while [ "$go" != 'y' ] && [ "$go" != 'n' ]; do
-  read -p "您想把穷奇面板安装到 $setup_path 目录吗?(y/n): " go
+  read -p "您想把宝塔面板安装到 $setup_path 目录吗?(y/n): " go
 done
 
 if [ "$go" == 'n' ]; then
