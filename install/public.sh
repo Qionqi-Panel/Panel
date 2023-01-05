@@ -9,7 +9,7 @@ export PATH
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US:en
 
-download_Url='https://raw.githubusercontent.com/Qionqi-Panel/Panel/main'
+download_Url='https://qionqi-panel.oss-cn-shanghai.aliyuncs.com/'
 get_node_url() {
 	nodes=(https://dg2.bt.cn https://dg1.bt.cn https://download.bt.cn https://hk1-node.bt.cn https://na1-node.bt.cn https://jp1-node.bt.cn)
 

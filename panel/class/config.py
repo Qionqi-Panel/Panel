@@ -1,11 +1,5 @@
 #coding: utf-8
-# +-------------------------------------------------------------------
-# | 宝塔Linux面板 x3
-# +-------------------------------------------------------------------
-# | Copyright (c) 2015-2017 宝塔软件(http://bt.cn) All rights reserved.
-# +-------------------------------------------------------------------
-# | Author: hwliang <hwl@bt.cn>
-# +-------------------------------------------------------------------
+
 import public,re,sys,os,nginx,apache,json,time,ols
 try:
     import pyotp
@@ -194,7 +188,6 @@ class config:
     def clean_sess_files(self,sess_path):
         '''
             @name 清理过期的sess_file
-            @auther hwliang<2020-07-25>
             @param sess_path(string) sess_files目录
             @return void
         '''
@@ -1298,7 +1291,7 @@ class config:
     def set_basic_auth(self,get):
         is_open = False
         if get.open == 'True': is_open = True
-        tips = '_bt.cn'
+        tips = '_hostpanel.cc'
         path = 'config/basic_auth.json'
         ba_conf = None
         if os.path.exists(path):
@@ -1470,7 +1463,7 @@ class config:
                 try:
                     panel_name = json.loads(public.readFile(self._setup_path+'/config/config.json'))['title']
                 except:
-                    panel_name = '宝塔Linux面板'
+                    panel_name = 'HostPanel'
                 data = pyotp.totp.TOTP(secret_key).provisioning_uri(username, issuer_name='{}--{}'.format(panel_name,local_ip))
                 public.writeFile(self._core_fle_path+'/qrcode.txt',str(data))
                 return public.returnMsg(True, "开启成功")
@@ -1829,3 +1822,15 @@ class config:
         path = '/www/server/panel/data/send_login_white.json'
         public.WriteFile(path, json.dumps([]))
         return public.returnMsg(True, "清空成功")
+
+    def get_not_auth_status(self):
+        '''
+            @name 获取未认证时的响应状态
+            @author hwliang<2021-12-16>
+            @return int
+        '''
+        try:
+            status_code = int(public.read_config('abort'))
+            return status_code
+        except:
+            return 0

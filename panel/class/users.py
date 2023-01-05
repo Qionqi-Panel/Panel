@@ -31,7 +31,7 @@ class users_main:
         pdata = {
             "username": args.username.strip(),
             'salt': salt,
-            "password": public.md5(public.md5(public.md5(args.password.strip())+'_bt.cn')+salt)
+            "password": public.md5(public.md5(public.md5(args.password.strip())+'_hostpanel.cc')+salt)
         }
 
         if(public.M('users').where('username=?',(pdata['username'],)).count()):

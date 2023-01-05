@@ -66,13 +66,10 @@ echo "The root password set ${pwd}  successuful"'''
 def set_panel_pwd(password,ncli = False):
     import db
     sql = db.Sql()
-    result = sql.table('users').where('id=?',(1,)).setField('password',public.password_salt(public.md5(password),uid=1))
+    sql.table('users').where('id=?',(1,)).setField('password',public.password_salt(public.md5(password),uid=1))
     username = sql.table('users').where('id=?',(1,)).getField('username')
-    if ncli:
-        print("|-用户名: " + username)
-        print("|-新密码: " + password)
-    else:
-        print(username)
+    print("|-用户名: " + username)
+    print("|-新密码: " + password)
 
 #设置数据库目录
 def set_mysql_dir(path):
@@ -108,8 +105,8 @@ echo '---------------------------------------------------------------------'
     os.system("rm -f mysql_dir.sh")
 
 
-#封装
-def PackagePanel():
+#清理系统记录
+def ClearSystemRecord():
     print('========================================================')
     print('|-正在清理日志信息...'),
     public.M('logs').where('id!=?',(0,)).delete()
@@ -158,30 +155,7 @@ history -c
 '''
     os.system(command)
     print('\t\033[1;32m[done]\033[0m')
-    
-    
-    print("|-请选择用户初始化方式：")
-    print("="*50)
-    print(" (1) 访问面板页面时显示初始化页面")
-    print(" (2) 首次启动时自动随机生成新帐号密码")
-    print("="*50)
-    p_input = input("请选择初始化方式(default: 1): ")
-    print(p_input)
-    if p_input in [2,'2']:
-        public.writeFile('/www/server/panel/aliyun.pl',"True")
-        s_file = '/www/server/panel/install.pl'
-        if os.path.exists(s_file): os.remove(s_file)
-        public.M('config').where("id=?",('1',)).setField('status',1)
-    else:
-        public.writeFile('/www/server/panel/install.pl',"True")
-        public.M('config').where("id=?",('1',)).setField('status',0)
-    port = public.readFile('data/port.pl').strip()
-    print('========================================================')
-    print('\033[1;32m|-面板封装成功,请不要再登陆面板做任何其它操作!\033[0m')
-    if not p_input in [2,'2']:
-        print('\033[1;41m|-面板初始化地址: http://{SERVERIP}:'+port+'/install\033[0m')
-    else:
-        print('\033[1;41m|-获取初始帐号密码命令:bt default \033[0m')
+
 
 #清空正在执行的任务
 def CloseTask():
@@ -331,21 +305,6 @@ def ClearOther():
     print('|-已完成临时文件及网站日志的清理，删除['+str(count)+']个文件,共释放磁盘空间['+ToSize(total)+']')
     return total,count
 
-#关闭普通日志
-def CloseLogs():
-    try:
-        paths = ['/usr/lib/python2.7/site-packages/web/httpserver.py','/usr/lib/python2.6/site-packages/web/httpserver.py']
-        for path in paths:
-            if not os.path.exists(path): continue
-            hsc = public.readFile(path)
-            if hsc.find('500 Internal Server Error') != -1: continue
-            rstr = '''def log(self, status, environ):
-        if status != '500 Internal Server Error': return;'''
-            hsc = hsc.replace("def log(self, status, environ):",rstr)
-            if hsc.find('500 Internal Server Error') == -1: return False
-            public.writeFile(path,hsc)
-    except:pass
-
 #字节单位转换
 def ToSize(size):
     ds = ['b','KB','MB','GB','TB']
@@ -395,7 +354,7 @@ def setup_idc():
         titleNew = pInfo['brand'] + u'面板'
         if os.path.exists(tFile):
             title = public.GetConfigValue('title')
-            if title == '' or title == '宝塔Linux面板': 
+            if title == '' or title == 'HostPanel':
                 public.writeFile(tFile,titleNew)
                 public.SetConfigValue('title',titleNew)
         else:
@@ -403,26 +362,6 @@ def setup_idc():
             public.SetConfigValue('title',titleNew)
         return True
     except:pass
-
-#将插件升级到6.0
-def update_to6():
-    print("====================================================")
-    print("正在升级插件...")
-    print("====================================================")
-    download_address = public.get_url()
-    exlodes = ['gitlab','pm2','mongodb','deployment_jd','logs','docker','beta','btyw']
-    for pname in os.listdir('plugin/'):
-        if not os.path.isdir('plugin/' + pname): continue
-        if pname in exlodes: continue
-        print("|-正在升级【%s】..." % pname),
-        download_url = download_address + '/install/plugin/' + pname + '/install.sh'
-        to_file = '/tmp/%s.sh' % pname
-        public.downloadFile(download_url,to_file)
-        os.system('/bin/bash ' + to_file + ' install &> /tmp/plugin_update.log 2>&1')
-        print("    \033[32m[成功]\033[0m")
-    print("====================================================")
-    print("\033[32m所有插件已成功升级到最新!\033[0m")
-    print("====================================================")
 
 #命令行菜单
 def bt_cli(u_input = 0):
@@ -668,16 +607,12 @@ if __name__ == "__main__":
         setup_idc()
     elif type == 'mysql_dir':
         set_mysql_dir(sys.argv[2])
-    elif type == 'package':
-        PackagePanel()
+    elif type == 'clearSysRecord':
+        ClearSystemRecord()
     elif type == 'ssl':
         CreateSSL()
     elif type == 'clear':
         ClearSystem()
-    elif type == 'closelog':
-        CloseLogs()
-    elif type == 'update_to6':
-        update_to6()
     elif type == "cli":
         clinum = 0
         try:

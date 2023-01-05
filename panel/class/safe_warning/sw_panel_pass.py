@@ -1119,7 +1119,7 @@ def password_salt(password,username=None,uid=None):
             salt = salt[0]
         else:
             salt = ""
-    return public.md5(public.md5(password+'_bt.cn')+salt)
+    return public.md5(public.md5(password+'_hostpanel.cc')+salt)
 
 
 def is_strong_password(password):

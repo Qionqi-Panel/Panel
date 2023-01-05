@@ -25,12 +25,12 @@ class system:
             session['config'] = public.M('config').where("id=?",('1',)).field('webserver,sites_path,backup_path,status,mysql_root').find()
         if not 'email' in session['config']:
             session['config']['email'] = public.M('users').where("id=?",('1',)).getField('email')
-        data = {}
+        # data = {}
         data = session['config']
         data['webserver'] = public.get_webserver()
+
         #PHP版本
         phpVersions = ('52','53','54','55','56','70','71','72','73','74','80','81','82')
-        
         data['php'] = []
         
         for version in phpVersions:
@@ -44,7 +44,6 @@ class system:
                 tmp['pathinfo'] = phpConfig['pathinfo']
                 tmp['status'] = os.path.exists('/tmp/php-cgi-' + version + '.sock')
                 data['php'].append(tmp)
-            
         tmp = {}
         data['webserver'] = ''
         serviceName = 'nginx'
@@ -76,7 +75,6 @@ class system:
                         phpversion = rtmp.groups()[0]
             except:
                 pass
-            
         elif os.path.exists(self.setupPath+'/apache'):
             data['webserver'] = 'apache'
             serviceName = 'httpd'
@@ -118,8 +116,8 @@ class system:
                     if conf.find(self.setupPath + '/stop') == -1: pstatus = True
             except:
                 pass
-                
-                
+
+
         tmp['type'] = data['webserver']
         tmp['version'] = public.readFile(self.setupPath + '/'+data['webserver']+'/version.pl');
         tmp['status'] = False
@@ -128,42 +126,42 @@ class system:
         data['web'] = tmp
         
         tmp = {}
-        vfile = self.setupPath + '/phpmyadmin/version.pl';
-        tmp['version'] = public.readFile(vfile);
+        vfile = self.setupPath + '/phpmyadmin/version.pl'
+        tmp['version'] = public.readFile(vfile)
         if tmp['version']: tmp['version'] = tmp['version'].strip()
-        tmp['setup'] = os.path.exists(vfile);
-        tmp['status'] = pstatus;
-        tmp['phpversion'] = phpversion.strip();
-        tmp['port'] = phpport;
-        tmp['auth'] = pauth;
-        data['phpmyadmin'] = tmp;
+        tmp['setup'] = os.path.exists(vfile)
+        tmp['status'] = pstatus
+        tmp['phpversion'] = phpversion.strip()
+        tmp['port'] = phpport
+        tmp['auth'] = pauth
+        data['phpmyadmin'] = tmp
         
         tmp = {}
-        tmp['setup'] = os.path.exists('/etc/init.d/tomcat');
+        tmp['setup'] = os.path.exists('/etc/init.d/tomcat')
         tmp['status'] = tmp['setup']
         #if public.ExecShell('ps -aux|grep tomcat|grep -v grep')[0] == "": tmp['status'] = False
-        tmp['version'] = public.readFile(self.setupPath + '/tomcat/version.pl');
+        tmp['version'] = public.readFile(self.setupPath + '/tomcat/version.pl')
         data['tomcat'] = tmp;
         
         tmp = {}
-        tmp['setup'] = os.path.exists(self.setupPath +'/mysql/bin/mysql');
-        tmp['version'] = public.readFile(self.setupPath + '/mysql/version.pl');
+        tmp['setup'] = os.path.exists(self.setupPath +'/mysql/bin/mysql')
+        tmp['version'] = public.readFile(self.setupPath + '/mysql/version.pl')
         tmp['status'] = os.path.exists('/tmp/mysql.sock')
         data['mysql'] = tmp
         
         tmp = {}
-        tmp['setup'] = os.path.exists(self.setupPath +'/redis/runtest');
-        tmp['status'] = os.path.exists('/var/run/redis_6379.pid');
-        data['redis'] = tmp;
+        tmp['setup'] = os.path.exists(self.setupPath +'/redis/runtest')
+        tmp['status'] = os.path.exists('/var/run/redis_6379.pid')
+        data['redis'] = tmp
         
         tmp = {}
-        tmp['setup'] = os.path.exists('/usr/local/memcached/bin/memcached');
-        tmp['status'] = os.path.exists('/var/run/memcached.pid');
-        data['memcached'] = tmp;
+        tmp['setup'] = os.path.exists('/usr/local/memcached/bin/memcached')
+        tmp['status'] = os.path.exists('/var/run/memcached.pid')
+        data['memcached'] = tmp
         
         tmp = {}
-        tmp['setup'] = os.path.exists(self.setupPath +'/pure-ftpd/bin/pure-pw');
-        tmp['version'] = public.readFile(self.setupPath + '/pure-ftpd/version.pl');
+        tmp['setup'] = os.path.exists(self.setupPath +'/pure-ftpd/bin/pure-pw')
+        tmp['version'] = public.readFile(self.setupPath + '/pure-ftpd/version.pl')
         tmp['status'] = os.path.exists('/var/run/pure-ftpd.pid')
         data['pure-ftpd'] = tmp
         data['panel'] = self.GetPanelInfo()
@@ -221,7 +219,6 @@ class system:
         try:
             rep = r"\n;*\s*cgi\.fix_pathinfo\s*=\s*([0-9]+)\s*\n"
             tmp = re.search(rep,phpini).groups()
-            
             if tmp[0] == '1':
                 data['pathinfo'] = True
             else:

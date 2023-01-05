@@ -89,7 +89,6 @@ admin_path_checks = [
                     '/site',
                     '/sites',
                     '/ftp',
-                    '/public',
                     '/database',
                     '/data',
                     '/download_file',
@@ -139,13 +138,13 @@ def request_check():
     if request.path in ['/service_status']: return
 
     #POST参数过滤
-    if request.path in ['/login','/safe','/hook','/public','/down','/get_app_bind_status','/check_bind']:
+    if request.path in ['/login','/safe','/hook','/down','/get_app_bind_status','/check_bind']:
         pdata = request.form.to_dict()
         for k in pdata.keys():
             if len(k) > 48: return abort(403)
             if len(pdata[k]) > 256: return abort(403)
 
-    if not request.path in ['/safe','/hook','/public','/mail_sys','/down']:
+    if not request.path in ['/safe','/hook','/mail_sys','/down']:
         ip_check = public.check_ip_panel()
         if ip_check: return ip_check
     
@@ -161,11 +160,11 @@ def request_check():
             return public.returnJson(False,'INIT_REQUEST_CHECK_LOCAL_ERR'),json_header
 
     if app.config['BASIC_AUTH_OPEN']:
-        if request.path in ['/public','/download','/mail_sys','/hook','/down','/check_bind','/get_app_bind_status']: return
+        if request.path in ['/download','/mail_sys','/hook','/down','/check_bind','/get_app_bind_status']: return
         auth = request.authorization
         if not comm.get_sk(): return
         if not auth: return send_authenticated()
-        tips = '_bt.cn'
+        tips = '_hostpanel.cc'
         if public.md5(auth.username.strip() + tips) != app.config['BASIC_AUTH_USERNAME'] \
             or public.md5(auth.password.strip() + tips) != app.config['BASIC_AUTH_PASSWORD']:
             return send_authenticated()

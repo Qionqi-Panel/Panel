@@ -747,7 +747,7 @@ var weChat = {
 			$('.layui-layer-close').click(function(event) {
 				window.clearInterval(_this.settiming);
 			});
-			this.getUserDetails();
+			// this.getUserDetails();
 			$('.iconCode').hide();
 			$('.personalDetails').show();
 		},

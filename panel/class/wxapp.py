@@ -16,7 +16,6 @@ import time
 from BTPanel import session,cache,request
 
 class wxapp():
-
     def __init__(self):
         self.app_path = '/www/server/panel/data/'
         self.app_path_p = '/www/server/panel/plugin/app/'

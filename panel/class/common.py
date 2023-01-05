@@ -1,11 +1,5 @@
 #coding: utf-8
-# +-------------------------------------------------------------------
-# | 宝塔Linux面板
-# +-------------------------------------------------------------------
-# | Copyright (c) 2015-2099 宝塔软件(http://bt.cn) All rights reserved.
-# +-------------------------------------------------------------------
-# | Author: hwliang <hwl@bt.cn>
-# +-------------------------------------------------------------------
+
 from BTPanel import session, cache , request, redirect, g
 from datetime import datetime
 from public import dict_obj
@@ -33,7 +27,8 @@ class panelSetup:
         g.debug = os.path.exists('data/debug.pl')
         g.pyversion = sys.version_info[0]
         session['version'] = g.version
-        
+
+        # TODO:预备删除
         if request.method == 'GET':
             if not g.debug:
                 g.cdn_url = public.get_cdn_url()
@@ -44,17 +39,22 @@ class panelSetup:
             else:
                 g.cdn_url = '/static'
             session['title'] = g.title
-            
+
+        # 是否开启文件回收站
         g.recycle_bin_open = 0
         if os.path.exists("data/recycle_bin.pl"): g.recycle_bin_open = 1
-        
+
+        # 是否开启数据库回收站
         g.recycle_bin_db_open = 0
         if os.path.exists("data/recycle_bin_db.pl"): g.recycle_bin_db_open = 1
         g.is_aes = False
-        self.other_import()
+
+        # TODO: 疑似可以删除
+        # self.other_import()
         return None
 
 
+    # TODO: 疑似可以删除
     def other_import(self):
         g.o = public.readFile('data/o.pl')
         g.other_css = []

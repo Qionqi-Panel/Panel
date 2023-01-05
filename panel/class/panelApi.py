@@ -1,11 +1,5 @@
 #coding: utf-8
-# +-------------------------------------------------------------------
-# | 宝塔Linux面板
-# +-------------------------------------------------------------------
-# | Copyright (c) 2015-2017 宝塔软件(http://bt.cn) All rights reserved.
-# +-------------------------------------------------------------------
-# | Author: 阿良 <287962566@qq.com>
-# +-------------------------------------------------------------------
+
 import public,os,json,time
 class panelApi:
     save_path = '/www/server/panel/config/api.json'
@@ -225,6 +219,7 @@ class panelApi:
         return public.returnMsg(True,token)
 
     def get_tmp_token(self,get):
+        print(get.__dict__)
         if not 'request_token' in get: return public.returnMsg(False,'只能通过API接口获取临时密钥')
         data = self.get_api_config()
         data['tmp_token'] = public.GetRandomString(64)

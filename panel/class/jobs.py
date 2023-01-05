@@ -1,11 +1,5 @@
 #coding: utf-8
-# +-------------------------------------------------------------------
-# | 宝塔Linux面板 
-# +-------------------------------------------------------------------
-# | Copyright (c) 2015-2099 宝塔软件(http://bt.cn) All rights reserved.
-# +-------------------------------------------------------------------
-# | Author: hwliang <hwl@bt.cn>
-# +-------------------------------------------------------------------
+
 import time,public,db,os,sys,json,re
 os.chdir('/www/server/panel')
 
@@ -165,7 +159,6 @@ def control_init():
     #disable_putenv('putenv')
     #clean_session()
     #set_crond()
-    test_ping()
     clean_max_log('/www/server/panel/plugin/rsync/lsyncd.log')
     clean_max_log('/var/log/rsyncd.log',1024*1024*10)
     clean_max_log('/root/.pm2/pm2.log',1024*1024*20)
@@ -354,15 +347,7 @@ def update_py37():
     public.ExecShell("nohup curl {}/install/update_panel.sh|bash &>/tmp/panelUpdate.pl &".format(download_url))
     public.writeFile(pyenv_exists,'True')
     return True
-    
-def test_ping():
-    _f = '/www/server/panel/data/ping_token.pl'
-    if os.path.exists(_f): os.remove(_f)
-    try:
-        import panelPing
-        panelPing.Test().create_token()
-    except:
-        pass
+
 
 #检查dnsapi
 def check_dnsapi():
@@ -555,5 +540,4 @@ def clean_session():
         if old_state: public.ExecShell("rm -f " + session_path + '/*')
         return True
     except:return False
-
 

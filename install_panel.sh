@@ -214,7 +214,7 @@ get_node_url() {
   fi
   rm -f $tmp_file1
   rm -f $tmp_file2
-  download_Url='https://raw.githubusercontent.com/Qionqi-Panel/Panel/main'
+  download_Url='https://qionqi-panel.oss-cn-shanghai.aliyuncs.com/'
   echo "Download node: $download_Url"
   echo '---------------------------------------------'
 }
@@ -733,10 +733,6 @@ Set_Bt_Panel() {
   auth_path=$(cat /dev/urandom | head -n 16 | md5sum | head -c 8)
   echo "/${auth_path}" >${admin_auth}
   chmod -R 700 $pyenv_path/pyenv/bin
-  /www/server/panel/pyenv/bin/pip3 install pymongo
-  /www/server/panel/pyenv/bin/pip3 install psycopg2-binary
-  /www/server/panel/pyenv/bin/pip3 install flask -U
-  /www/server/panel/pyenv/bin/pip3 install flask-sock
   auth_path=$(cat ${admin_auth})
   cd ${setup_path}/server/panel/
   if [ "$SET_SSL" == true ]; then
@@ -1000,3 +996,6 @@ endTime=$(date +%s)
 echo -e "Time consumed:\033[32m $outTime \033[0mMinute!"
 sed -i "s|bind_user == 'True'|bind_user == 'XXXX'|" /www/server/panel/BTPanel/static/js/index.js && rm -f /www/server/panel/data/bind.pl
 echo -e "绑定手机去除完成！！"
+
+
+

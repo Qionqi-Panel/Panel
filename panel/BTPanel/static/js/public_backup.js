@@ -1204,8 +1204,6 @@ var bt = {
     }
 };
 
-
-
 bt.pub = {
     get_data: function(data, callback, hide) {
         if (!hide) var loading = bt.load(lan.public.the);
@@ -5737,8 +5735,6 @@ bt.site = {
     }
 }
 
-
-
 bt.form = {
     btn: {
         close: function(title, callback) {
@@ -6333,3 +6329,5 @@ var form_group = {
         });
     }
 }
+
+var hpanel = bt;

@@ -1,10 +1,6 @@
 #coding: utf-8
 # +-------------------------------------------------------------------
-# | 宝塔Linux面板
-# +-------------------------------------------------------------------
-# | Copyright (c) 2015-2099 宝塔软件(http:#bt.cn) All rights reserved.
-# +-------------------------------------------------------------------
-# | Author: hwliang <hwl@bt.cn>
+# | 用户登陆退出操作
 # +-------------------------------------------------------------------
 
 import public,os,sys,db,time,json,re
@@ -14,40 +10,52 @@ from flask import request,redirect,g
 class userlogin:
     
     def request_post(self,post):
+        '''
+        账号密码登陆
+        :param post:
+        :return:
+        '''
         if not hasattr(post, 'username') or not hasattr(post, 'password'):
             return public.returnJson(False,'LOGIN_USER_EMPTY'),json_header
-        
         self.error_num(False)
+
+        # 判断登陆次数验证
         if self.limit_address('?') < 1: return public.returnJson(False,'LOGIN_ERR_LIMIT'),json_header
         post.username = post.username.strip()
         
         public.chdck_salt()
         sql = db.Sql()
+
         user_list = sql.table('users').field('id,username,password,salt').select()
-        
+
         userInfo = None
         for u_info in user_list:
             if public.md5(u_info['username']) == post.username:
                 userInfo = u_info
+        # 校验验证码
         if 'code' in session:
             if session['code'] and not 'is_verify_password' in session:
                 if not hasattr(post, 'code'): return public.returnJson(False,'验证码不能为空!'),json_header
                 if not public.checkCode(post.code):
                     public.WriteLog('TYPE_LOGIN','LOGIN_ERR_CODE',('****','****',public.GetClientIp()))
                     return public.returnJson(False,'CODE_ERR'),json_header
+        # 验证信息
         try:
             if not userInfo['salt']:
                 public.chdck_salt()
                 userInfo = sql.table('users').where('id=?',(userInfo['id'],)).field('id,username,password,salt').find()
-
             password = public.md5(post.password.strip() + userInfo['salt'])
+
             if public.md5(userInfo['username']) != post.username or userInfo['password'] != password:
                 public.WriteLog('TYPE_LOGIN','LOGIN_ERR_PASS',('****','******',public.GetClientIp()))
                 num = self.limit_address('+')
                 return public.returnJson(False,'LOGIN_USER_ERR',(str(num),)),json_header
             _key_file = "/www/server/panel/data/two_step_auth.txt"
-            #登陆告警
-            public.login_send_body("账号密码",userInfo['username'],public.GetClientIp(),str(request.environ.get('REMOTE_PORT')))
+
+            # TODO: 这里可以做 登陆告警
+            # public.login_send_body("账号密码",userInfo['username'],public.GetClientIp(),str(request.environ.get('REMOTE_PORT')))
+
+            # 验证Google Authenticator
             if hasattr(post,'vcode'):
                 if self.limit_address('?',v="vcode") < 1: return public.returnJson(False,'您多次验证失败，禁止10分钟'),json_header
                 import pyotp
@@ -56,6 +64,7 @@ class userlogin:
                     return public.returnJson(False, "没有找到key,请尝试在命令行关闭谷歌验证后在开启"),json_header
                 t = pyotp.TOTP(secret_key)
                 result = t.verify(post.vcode)
+
                 if not result:
                     if public.sync_date(): result = t.verify(post.vcode)
                     if not result:
@@ -64,13 +73,11 @@ class userlogin:
                 now = int(time.time())
                 public.writeFile("/www/server/panel/data/dont_vcode_ip.txt",json.dumps({"client_ip":public.GetClientIp(),"add_time":now}))
                 self.limit_address('--',v="vcode")
-                self.set_cdn_host(post)
                 return self._set_login_session(userInfo)
 
             acc_client_ip = self.check_two_step_auth()
 
             if not os.path.exists(_key_file) or acc_client_ip:
-                self.set_cdn_host(post)
                 return self._set_login_session(userInfo)
             self.limit_address('-')
             session['is_verify_password'] = True
@@ -86,41 +93,11 @@ class userlogin:
             num = self.limit_address('+')
             return public.returnJson(False,'LOGIN_USER_ERR',(str(num),)),json_header
 
-    def request_tmp(self,get):
-        try:
-            if not hasattr(get,'tmp_token'): return public.returnJson(False,'错误的参数!'),json_header
-            if len(get.tmp_token) == 48:
-                return self.request_temp(get)
-            if len(get.tmp_token) != 64: return public.returnJson(False,'错误的参数!'),json_header
-            if not re.match(r"^\w+$",get.tmp_token):return public.returnJson(False,'错误的参数!'),json_header
-
-            save_path = '/www/server/panel/config/api.json'
-            data = json.loads(public.ReadFile(save_path))
-            if not 'tmp_token' in data or not 'tmp_time' in data: return public.returnJson(False,'验证失败!'),json_header
-            if (time.time() - data['tmp_time']) > 120: return public.returnJson(False,'过期的Token'),json_header
-            if get.tmp_token != data['tmp_token']: return public.returnJson(False,'错误的Token'),json_header
-            userInfo = public.M('users').where("id=?",(1,)).field('id,username').find()
-            session['login'] = True
-            session['username'] = userInfo['username']
-            session['tmp_login'] = True
-            session['uid'] = userInfo['id']
-            public.WriteLog('TYPE_LOGIN','LOGIN_SUCCESS',(userInfo['username'],public.GetClientIp()+ ":" + str(request.environ.get('REMOTE_PORT'))))
-            self.limit_address('-')
-            cache.delete('panelNum')
-            cache.delete('dologin')
-            session['session_timeout'] = time.time() + public.get_session_timeout()
-            del(data['tmp_token'])
-            del(data['tmp_time'])
-            public.writeFile(save_path,json.dumps(data))
-            self.set_request_token()
-            self.login_token()
-            self.set_cdn_host(get)
-            return redirect('/')
-        except:
-            return public.returnJson(False,'登录失败,' + public.get_error_info()),json_header
-
-
     def request_temp(self,get):
+        '''
+        临时访问授权
+        为非管理员临时提供面板访问权限
+        '''
         try:
             if len(get.__dict__.keys()) > 2: return '存在无意义参数!'
             if not hasattr(get,'tmp_token'): return '错误的参数!'
@@ -162,24 +139,29 @@ class userlogin:
             session['session_timeout'] = time.time() + public.get_session_timeout()
             self.set_request_token()
             self.login_token()
-            self.set_cdn_host(get)
             public.login_send_body("临时授权",userInfo['username'],public.GetClientIp(),str(request.environ.get('REMOTE_PORT')))
             return redirect('/')
         except:
             return '登录失败，登录过程发生错误'
-   
 
     def login_token(self):
+        '''
+        重新生成Session
+        :return:
+        '''
         import config
         config.config().reload_session()
 
     def request_get(self,get):
-        #if os.path.exists('/www/server/panel/install.pl'): raise redirect('/install');
+        '''
+        验证 域名绑定、白名单IP 验证码 是否登陆
+        :param get:
+        :return:
+        '''
         if not 'title' in session: session['title'] = public.getMsg('NAME')
         domain = public.readFile('data/domain.conf')
-        
         if domain:
-            if(public.GetHost().lower() != domain.strip().lower()): 
+            if(public.GetHost().lower() != domain.strip().lower()):
                 errorStr = public.ReadFile('./BTPanel/templates/' + public.GetConfigValue('template') + '/error2.html')
                 try:
                     errorStr = errorStr.format(public.getMsg('PAGE_ERR_TITLE'),public.getMsg('PAGE_ERR_DOMAIN_H1'),public.getMsg('PAGE_ERR_DOMAIN_P1'),public.getMsg('PAGE_ERR_DOMAIN_P2'),public.getMsg('PAGE_ERR_DOMAIN_P3'),public.getMsg('NAME'),public.getMsg('PAGE_ERR_HELP'))
@@ -204,20 +186,12 @@ class userlogin:
             session['code'] = False
         self.error_num(False)
 
-    #生成request_token
     def set_request_token(self):
+        '''
+        生成request_token
+        :return:
+        '''
         session['request_token_head'] = public.GetRandomString(48)
-
-    def set_cdn_host(self,get):
-        try:
-            if not 'cdn_url' in get: return True
-            plugin_path = 'plugin/static_cdn'
-            if not os.path.exists(plugin_path): return True
-            cdn_url = public.get_cdn_url()
-            if not cdn_url or cdn_url == get.cdn_url: return True
-            public.set_cdn_url(get.cdn_url)
-        except:
-            return False
 
     #防暴破
     def error_num(self,s = True):
@@ -301,8 +275,7 @@ class userlogin:
             num = self.limit_address('+')
             return public.returnJson(False,'LOGIN_USER_ERR',(str(num),)),json_header
 
-
-    # 检查是否需要进行二次验证
+    # 检查是否需要进行二次验证(Google Authenticator )
     def check_two_step_auth(self):
         dont_vcode_ip_info = public.readFile("/www/server/panel/data/dont_vcode_ip.txt")
         acc_client_ip = False

@@ -1,11 +1,4 @@
 #coding: utf-8
-#-------------------------------------------------------------------
-# 宝塔Linux面板
-#-------------------------------------------------------------------
-# Copyright (c) 2015-2016 宝塔软件(http:#bt.cn) All rights reserved.
-#-------------------------------------------------------------------
-# Author: hwliang <hwl@bt.cn>
-#-------------------------------------------------------------------
 
 #------------------------------
 # SSL接口
@@ -60,6 +53,8 @@ class panelSSL:
         pdata = {}
         pdata['data'] = self.De_Code(data)
         try:
+            print(self.__APIURL+'/GetToken')
+            print(data)
             rtmp = public.httpPost(self.__APIURL+'/GetToken',pdata)
             result = json.loads(rtmp)
             result['data'] = self.En_Code(result['data'])

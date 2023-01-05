@@ -1,8 +1,8 @@
 {
   "language": "Simplified_Chinese",
-  "title": "宝塔Linux面板",
-  "brand": "宝塔",
-  "product": "Linux面板",
+  "title": "HostPanel Linux面板",
+  "brand": "HostPanel",
+  "product": "HostPanel.Cc面板",
   "home": "https://www.bt.cn",
   "download": "https://download.bt.cn",
   "root_path": "/www",
